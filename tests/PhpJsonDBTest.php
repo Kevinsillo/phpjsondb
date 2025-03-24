@@ -76,7 +76,7 @@ class PhpJsonDBTest extends TestCase
     {
         $database = new PhpJsonDB($this->database_path);
         $database->selectTable('users');
-        $records = $database->tableRecordCount();
+        $records = $database->tableRecordsCount();
         $this->assertEquals(0, $records);
     }
 

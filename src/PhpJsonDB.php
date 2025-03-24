@@ -89,7 +89,7 @@ class PhpJsonDB
      *
      * @return int
      */
-    public function tableRecordCount(): int
+    public function tableRecordsCount(): int
     {
         $control = $this->readControlFile();
         return $control['records_count'] ?? 0;

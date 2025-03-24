@@ -1,6 +1,6 @@
 {
     "name": "kevinsillo/phpjsondb",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "description": "PhpJsonDB is a PHP library for managing databases using JSON files. It provides a simple, file-system based approach to database management with type-safe operations.",
     "type": "library",
     "license": "MIT",
