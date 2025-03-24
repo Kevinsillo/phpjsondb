@@ -16,7 +16,7 @@ PhpJsonDB is a modern PHP library for managing databases using JSON files. It pr
 
 ```bash
 # Instala fácilmente con Composer 🎉
-composer require phpjsondb
+composer require kevinsillo/phpjsondb
 ```
 
 ## 🧰 Methods Overview
@@ -40,7 +40,6 @@ composer require phpjsondb
 | `updateById()` | Updates an existing record. |
 | `delete()` | Deletes records selected. |
 | `deleteById()` | Deletes a record. |
-| `groupBy()` | Groups records by a field and applies aggregation functions. |
 | `limit()` | Applies pagination to the query. |
 | `orderBy()` | Applies ordering to the result set. |
 | `getRecords()` | Gets the records in the current result set. |

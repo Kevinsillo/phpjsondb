@@ -40,7 +40,7 @@ class DocumentationGenerator
 
         // Installation
         $readme .= "\n## 🛠️ Installation\n\n";
-        $readme .= "```bash\n# Instala fácilmente con Composer 🎉\ncomposer require phpjsondb\n```\n";
+        $readme .= "```bash\n# Instala fácilmente con Composer 🎉\ncomposer require kevinsillo/phpjsondb\n```\n";
 
         // Public Methods Overview
         $readme .= "\n## 🧰 Methods Overview\n\n";

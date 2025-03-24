@@ -55,16 +55,6 @@ class PhpJsonDB
      */
 
     /**
-     * Gets the complete path of the current table.
-     *
-     * @return string
-     */
-    private function getTablePath(): string
-    {
-        return $this->directory . "/" . $this->currentTable;
-    }
-
-    /**
      * Gets a list of all tables.
      *
      * @return array
@@ -99,7 +89,7 @@ class PhpJsonDB
      *
      * @return int
      */
-    public function tableRecords(): int
+    public function tableRecordCount(): int
     {
         $control = $this->readControlFile();
         return $control['records_count'] ?? 0;
@@ -213,6 +203,16 @@ class PhpJsonDB
         }
 
         return true;
+    }
+
+    /**
+     * Gets the complete path of the current table.
+     *
+     * @return string
+     */
+    private function getTablePath(): string
+    {
+        return $this->directory . "/" . $this->currentTable;
     }
 
     /**
@@ -439,6 +439,7 @@ class PhpJsonDB
             $result = $this->updateById($record['id'], $data);
         }
 
+        $this->cleanProperties();
         return $result;
     }
 
@@ -483,6 +484,7 @@ class PhpJsonDB
             $result = $this->deleteById($record['id']);
         }
 
+        $this->cleanProperties();
         return $result;
     }
 
@@ -511,106 +513,9 @@ class PhpJsonDB
 
     /**
      * Groups records by a field and applies aggregation functions.
-     * @param string $field 
-     * @param bool $count 
-     * @param array $aggregate 
-     * @return array 
      */
-    public function groupBy(string $field, bool $count = false, array $aggregate = []): array
-    {
-        $result = [];
-
-        # If there are no records, return an empty result
-        if (empty($this->records)) {
-            return $result;
-        }
-
-        # Iterate over each record
-        foreach ($this->records as $record) {
-            if (!isset($record[$field])) {
-                continue;
-            }
-
-            $key = (string)$record[$field];
-
-            if (!isset($result[$key])) {
-                $result[$key] = [
-                    'key' => $record[$field],
-                    'records' => []
-                ];
-
-                if ($count) {
-                    $result[$key]['count'] = 0;
-                }
-
-                # Initialize accumulators for aggregation functions
-                foreach ($aggregate as $aggField => $function) {
-                    $result[$key]["_{$function}_{$aggField}"] = [
-                        'sum' => 0,
-                        'count' => 0,
-                        'min' => null,
-                        'max' => null
-                    ];
-                }
-            }
-
-            # Add record to the group
-            $result[$key]['records'][] = $record;
-
-            # Increment count if needed
-            if ($count) {
-                $result[$key]['count']++;
-            }
-
-            # Update accumulators for aggregation functions
-            foreach ($aggregate as $aggField => $function) {
-                if (isset($record[$aggField]) && is_numeric($record[$aggField])) {
-                    $value = $record[$aggField];
-                    $accumulator = &$result[$key]["_{$function}_{$aggField}"];
-
-                    # Sum/Count
-                    $accumulator['sum'] += $value;
-                    $accumulator['count']++;
-
-                    # Min/Max
-                    if ($accumulator['min'] === null || $value < $accumulator['min']) {
-                        $accumulator['min'] = $value;
-                    }
-                    if ($accumulator['max'] === null || $value > $accumulator['max']) {
-                        $accumulator['max'] = $value;
-                    }
-                }
-            }
-        }
-
-        # Calculate aggregated values
-        foreach ($result as &$group) {
-            foreach ($aggregate as $aggField => $function) {
-                $accumulator = $group["_{$function}_{$aggField}"];
-
-                switch ($function) {
-                    case 'sum':
-                        $group["sum_{$aggField}"] = $accumulator['sum'];
-                        break;
-                    case 'avg':
-                        $group["avg_{$aggField}"] = $accumulator['count'] > 0 ?
-                            $accumulator['sum'] / $accumulator['count'] : 0;
-                        break;
-                    case 'min':
-                        $group["min_{$aggField}"] = $accumulator['min'];
-                        break;
-                    case 'max':
-                        $group["max_{$aggField}"] = $accumulator['max'];
-                        break;
-                }
-
-                # Remove accumulator
-                unset($group["_{$function}_{$aggField}"]);
-            }
-        }
-
-        return array_values($result);
-    }
+    # TODO: Implement groupBy method
+    # public function groupBy(): void {}
 
     /**
      * Applies pagination to the query.
@@ -677,11 +582,14 @@ class PhpJsonDB
     {
         $records = $this->records;
 
+        if (empty($records)) {
+            $records = $this->getAllRegistries();
+        }
+
         # Apply field selection if fields were specified
         if (!empty($this->selectedFields)) {
             $filteredRecords = [];
             foreach ($records as $record) {
-                $filteredRecord = ['id' => $record['id']];
                 foreach ($this->selectedFields as $field) {
                     if (isset($record[$field])) {
                         $filteredRecord[$field] = $record[$field];
@@ -744,8 +652,8 @@ class PhpJsonDB
 
         $records = [];
         foreach ($files as $file) {
-            $content = file_get_contents($file);
-            $records[$content['id']] = json_decode($content, true);
+            $content = json_decode(file_get_contents($file), true);
+            $records[$content['id']] = $content;
         }
 
         return $records;
