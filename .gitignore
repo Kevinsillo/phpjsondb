@@ -3,3 +3,4 @@ vendor
 dist
 files
 .env
+composer.lock
