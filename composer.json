@@ -1,0 +1,24 @@
+{
+    "name": "kevinsillo/phpjsondb",
+    "description": "PhpJsonDB is a PHP library for managing databases using JSON files. It provides a simple, file-system based approach to database management with type-safe operations.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": ">=8.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Kevinsillo\\PhpJsonDB\\": "src/",
+            "Kevinsillo\\Tests\\": "tests/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Kevin Illanas",
+            "email": "soporte@kevinillanas.dev"
+        }
+    ],
+    "require-dev": {
+        "phpunit/phpunit": "^11"
+    }
+}
